@@ -22,6 +22,17 @@ app.post('/todos', (req, res) => {
     });
 });
 
+app.get('/todos', (req, res) => {
+   Todo.find().then((todos) => {
+      // send back the information in object {} form
+      // give us more flexibility e.g. allow us to 
+      // add other property to it later 
+      res.send({todos}); 
+   }, (e) => {
+      res.status(400).send(e); 
+   }); 
+});
+
 app.listen(process.env.PORT, () => {
     console.log(`Started on port ${process.env.PORT}`);
 });
