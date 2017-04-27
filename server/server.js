@@ -7,6 +7,7 @@ var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 
 var app = express();
+const port = process.env.PORT || 3000;
 
 // get the json string and convert it to js object (in req.boy)
 app.use(bodyParser.json());
@@ -56,8 +57,8 @@ app.get('/todos/:id', (req, res) => {
     
 });
 
-app.listen(process.env.PORT, () => {
-    console.log(`Started on port ${process.env.PORT}`);
+app.listen(port, () => {
+    console.log(`Started on port ${port}`);
 });
 
 
