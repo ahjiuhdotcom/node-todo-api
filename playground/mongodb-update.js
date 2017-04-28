@@ -18,6 +18,8 @@ MongoClient.connect('mongodb://localhost/TodoApp', (err, db) => {
    }, {
        $set: {completed: true}
    }, {
+       // 'returnOriginal' is wheather we want original object or updated object
+       // return in 'then' promise. Set to false means return updated object
        returnOriginal: false
    }).then((result) => {
        console.log(result);

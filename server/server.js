@@ -1,5 +1,6 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+const _ = require('lodash');
+const express = require('express');
+const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
 
 var {mongoose} = require('./db/mongoose');
@@ -39,7 +40,6 @@ app.get('/todos/:id', (req, res) => {
    var id = req.params.id;
 
    if (!ObjectID.isValid(id)) {
-        console.log('ID not valid');
         return res.status(404).send();
     }
     
@@ -62,7 +62,6 @@ app.delete('/todos/:id', (req, res) => {
     var id = req.params.id;
 
    if (!ObjectID.isValid(id)) {
-        console.log('ID not valid');
         return res.status(404).send();
     }
     
@@ -73,6 +72,39 @@ app.delete('/todos/:id', (req, res) => {
         
         res.send({todo});
         
+    }).catch((e) => {
+        res.status(400).send();
+    });
+});
+
+// TO UPDATE
+app.patch('/todos/:id', (req, res) => {
+   var id = req.params.id;
+
+   // pick property 'test', 'completed' from req.body
+   // we don't want user able to update all other property manually, e.g. completedAt, _id
+   // which is system automatic generated
+   var body = _.pick(req.body, ['text', 'completed']);
+   
+   if (!ObjectID.isValid(id)) {
+        return res.status(404).send();
+    }
+    
+    if(_.isBoolean(body.completed) && body.completed) {
+        body.completedAt = new Date().getTime(); // 'getTime()' is js time stamp
+    } else {
+        body.completed = false;
+        body.completedAt = null;
+    }
+    
+    // {new: true} to to set the return object (in return promise, e.g. 'todo' item)
+    // is updated oject or original object. 'new: true' means updated object
+    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+        if(!todo) {
+            return res.status(404).send();
+        }
+        
+        res.send({todo});
     }).catch((e) => {
         res.status(400).send();
     });
