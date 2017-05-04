@@ -143,7 +143,6 @@ app.post('/users/login', (req, res) => {
         // if you wrote the code to do that. 
         // The idea is to avoid one single token that lives on forever.
         return user.generateAuthToken().then((token) => {
-            console.log('token', token);
             res.header('x-auth', token).send(user);
         });
     }).catch((e) => {
