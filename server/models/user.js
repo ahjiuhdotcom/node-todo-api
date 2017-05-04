@@ -70,6 +70,16 @@ UserSchema.methods.generateAuthToken = function() {
   // By returning token, we're enabling whoever calls generateAuthToken to get that value. 
 };
 
+UserSchema.methods.removeToken = function(token) {
+  var user = this;
+  return user.update({
+      // 'pull' or remove entire object of the matched token from tokens arrays
+      $pull: {
+          tokens: {token}
+      }
+  });
+};
+
 // '.statics' create Model method
 UserSchema.statics.findByToken = function (token) {
   var User = this;
