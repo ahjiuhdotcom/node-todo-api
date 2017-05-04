@@ -113,6 +113,7 @@ app.patch('/todos/:id', (req, res) => {
     });
 });
 
+// SIGN UP
 app.post('/users', (req, res) => {
     var body = _.pick(req.body, ['email', 'password']);
     var user = new User(body);
@@ -127,10 +128,27 @@ app.post('/users', (req, res) => {
     });
 });
 
-
-
+// Doing something with authenticated user, e.g. get the user
 app.get('/users/me', authenticate, (req, res) => {
    res.send(req.user);
+});
+
+// LOGIN
+app.post('/users/login', (req, res) => {
+    var body = _.pick(req.body, ['email', 'password']);
+    
+    User.findByCredentials(body.email, body.password).then((user) => {
+        // Why regenerate token?
+        // Andrew:  You could use a token generated from one device on another 
+        // if you wrote the code to do that. 
+        // The idea is to avoid one single token that lives on forever.
+        return user.generateAuthToken().then((token) => {
+            console.log('token', token);
+            res.header('x-auth', token).send(user);
+        });
+    }).catch((e) => {
+        res.status(400).send();
+    });
 });
 
 app.listen(port, () => {
